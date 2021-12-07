@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #marvelList {
+            text-align: center;
+
+        }
+        
+
+        .charactor img {
+            width: 10%;
+            height: 10%;
+            border-radius: 50%;
+        }
+
+        .charactor a{
+            display: block;
+            width: 45%;
+            float: left;
+            background-color: black;
+            color: yellow;
+            padding: 3px ;
+            margin-bottom: 20px;
+            text-decoration: none;
+        }
+        .charactor a:hover{
+            background-color: blue;
+
+        }
+    </style>
+</head>
+<body>
+    <div id="marvelList">
+        <a href="./add">Add new</a>
+        <% danhsach.forEach(function(marvel) { %>
+            <!-- <h1><%- marvel.Name %></h1> -->
+            <div class="charactor">
+                <img src="./upload/<%- marvel.Image %>" alt="">
+                <div class="marvalName"><%- marvel.Name %></div>
+                <div class="marvalLevel"><%- marvel.Level %></div>
+                
+
+                <div class="button">
+                    <a href="./edit/ <%- marvel.id %>">Edit</a>
+                    <a href="./delete/ <%- marvel.id %>">Delete</a>
+                </div>
+            </div>
+        <%  }); %>
+    
+    </div>
+    
+</body>
+</html>
