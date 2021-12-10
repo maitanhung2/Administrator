@@ -6,4 +6,4 @@ var schemaMarvel = new mongoose.Schema( {
     Level: Number
 });
 
-module.exports = mongoose.model("Marvel", schemaMarvel)
+module.exports = mongoose.model("Marvel", schemaMarvel);

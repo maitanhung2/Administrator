@@ -8,10 +8,10 @@ app.listen(3000);
 
 // Mongo
 const mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://hungmai:maitanhung@cluster0.akbnd.mongodb.net/Marvels?retryWrites=true&w=majority', function(err) {
+mongoose.connect('mongodb+srv://hungmai:maitanhung@cluster0.akbnd.mongodb.net/Marvels?retryWrites=true&w=majority', function (err) {
     if (err) {
         console.log("Mongo connect error: " + err);
-    }else {
+    } else {
         console.log("Mongo connect successfull.");
     }
 });
@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // });
 
 // Models
-var Marvel = require("./models/marvel");
+var Marvel = require("./Models/marvel");
 
 //multer
 var multer = require('multer');
@@ -57,22 +57,22 @@ app.post("/add", function (req, res) {
     upload(req, res, function (err) {
         if (err instanceof multer.MulterError) {
             // console.log("A Multer error occurred when uploading.");
-            res.json({"kq":0, "errMsg": "A Multer error occurred when uploading."})
+            res.json({ "kq": 0, "errMsg": "A Multer error occurred when uploading." })
         } else if (err) {
-            res.json({"kq":0, "errMsg": "An unknown error occurred when uploading." + err})
-            
+            res.json({ "kq": 0, "errMsg": "An unknown error occurred when uploading." + err })
+
         } else {
-            // save mongo
+            // save mongo(req.file.filename);
             // res.send(req.file.filename);
             var marvel = Marvel({
                 Name: req.body.txtName,
                 Image: req.file.filename,
                 Level: req.body.txtLevel
             });
-            marvel.save(function (err){
-                if(err) {
-                    res.json({"kq":0, "errMsg":err})
-                }else {
+            marvel.save(function (err) {
+                if (err) {
+                    res.json({ "kq": 0, "errMsg": err })
+                } else {
                     res.redirect("./list");
                 }
             });
@@ -83,11 +83,75 @@ app.post("/add", function (req, res) {
 
 // Danh sách 
 app.get("/list", function (req, res) {
-    Marvel.find(function(err, data) {
-        if(err) {
-            res.json({"kq": 0, "errMsg": err});
-        }else{
-            res.render("list", {danhsach:data});
+    Marvel.find(function (err, data) {
+        if (err) {
+            res.json({ "kq": 0, "errMsg": err });
+        } else {
+            res.render("list", { danhsach: data });
         }
     });
-})
+});
+
+// Edit
+app.get("/edit/:id", function (req, res) {
+    Marvel.findById(req.params.id, function (err, char) {
+        if (err) {
+            res.json({ "kq": 0, "errMsg": err });
+        } else {
+            console.log(char);
+            // lấy thông tin chi tiết của :id
+            res.render("edit", { nhanvat: char });
+        }
+    });
+});
+// nhận từ cái row sửa để đẩy qua bên đây
+app.post("/edit", function (req, res) {
+    //res.send("Xu ly Edit");
+    // (Check khách hàng có chọn file mới không)
+    // return {}/ Undefined
+    // console.log(req.files);
+    // console.log(req.body);
+    // giải quyết là req. nằm trong file upload mới đc
+
+    // - Khách hàng upload file mới
+    // upload file
+    upload(req, res, function (err) {
+        // - Khách hàng không chọn file nào mới
+        if (!req.file) {
+            Marvel.updateOne({ _id: req.body.IDChar }, {
+                Name: req.body.txtName,
+                Level: req.body.txtLevel
+            }, function (err) {
+                if (err) {
+                    res.json({ "kq": 0, "errMsg": err });
+                } else {
+                    // chuyển hướng về lại trang list để cho ta xem lại danh sách
+                    res.redirect("./list");
+                }
+            });
+        } else {
+            if (err instanceof multer.MulterError) {
+                res.json({ "kq": 0, "errMsg": "A Multer error occurred when uploading." })
+            } else if (err) {
+                res.json({ "kq": 0, "errMsg": "An unknown error occurred when uploading." + err })
+
+            } else {
+                //    Upload Mongo (req.file.filename)
+                Marvel.updateOne({ _id: req.body.IDChar }, {
+                    Name: req.body.txtName,
+                    Image: req.file.filename,
+                    Level: req.body.txtLevel
+                }, function (err) {
+                    if (err) {
+                        res.json({ "kq": 0, "errMsg": err });
+                    } else {
+                        // chuyển hướng về lại trang list để cho ta xem lại danh sách
+                        res.redirect("./list");
+                    }
+                });
+            }
+        }
+        
+    });
+
+});
