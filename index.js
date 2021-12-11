@@ -41,7 +41,7 @@ var upload = multer({
     storage: storage,
     fileFilter: function (req, file, cb) {
         console.log(file);
-        if (file.mimetype == "image/bmp" || file.mimetype == "image/png" || file.mimetype == "image/jpeg" || file.mimetype == "image/jbg" || file.mimetype == "image/gif") {
+        if (file.mimetype == "image/bmp" || file.mimetype == "image/png" || file.mimetype == "image/jpeg" || file.mimetype == "image/jpg" || file.mimetype == "image/gif") {
             cb(null, true)
         } else {
             return cb(new Error('Only image are allowed!'))
@@ -154,4 +154,15 @@ app.post("/edit", function (req, res) {
         
     });
 
+});
+
+app.get("/delete/:id", function(req, res) {
+    Marvel.deleteOne({_id:req.params.id}, function(err){
+        if (err) {
+            res.json({ "kq": 0, "errMsg": err });
+        } else {
+            // chuyển hướng về lại trang list để cho ta xem lại danh sách
+            res.redirect("../list");
+        }
+    });
 });
